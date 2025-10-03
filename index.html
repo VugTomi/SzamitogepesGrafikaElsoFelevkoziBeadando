@@ -51,7 +51,7 @@
         camera.lookAt(scene.position.x, scene.position.y, scene.position.z);
 
         // TALAJ
-        let groundGeometry = new THREE.PlaneGeometry(20, 20);
+        let groundGeometry = new THREE.PlaneGeometry(40, 40);
         let groundMaterail = new THREE.MeshBasicMaterial( {
            color: 0x228B22,
            wireframe: false,
@@ -67,7 +67,54 @@
         controls = new TrackballControls(camera, renderer.domElement);
         controls.rotateSpeed = 5.0;
         controls.panSpeed = 1.0;
+
+        // TÖRZS
+        let cylinderGeometry = new THREE.CylinderGeometry(1, 1, 6);
+        let cylinderMaterial = new THREE.MeshBasicMaterial({
+            color: 0x8B4513,
+            wireframe: false
+        });
+
+        let cylinderMesh = new THREE.Mesh(cylinderGeometry, cylinderMaterial);
+        cylinderMesh.position.set(7, 3.01, 7);
+        scene.add(cylinderMesh);
+
+        // LOMB1
+        let sphereGeometry1 = new THREE.SphereGeometry(2, 16, 16);
+        let sphereMaterial1 = new THREE.MeshBasicMaterial({
+            color: 0x228444,
+            wireframe: false
+        });
+
+        let sphereMesh1 = new THREE.Mesh(sphereGeometry1, sphereMaterial1);
+        sphereMesh1.position.set(5, 5, 7.5);
+        scene.add(sphereMesh1);
+
+        // LOMB2
+        let sphereGeometry2 = new THREE.SphereGeometry(2, 16, 16);
+
+        let sphereMesh2 = new THREE.Mesh(sphereGeometry2, sphereMaterial1);
+        sphereMesh2.position.set(7.5, 5, 5.5);
+        scene.add(sphereMesh2);
+
+        // LOMB3
+        let sphereGeometry3 = new THREE.SphereGeometry(2, 16, 16);
+        let sphereMesh3 = new THREE.Mesh(sphereGeometry3, sphereMaterial1);
+        sphereMesh3.position.set(8, 5, 8);
+        scene.add(sphereMesh3);
+
+        // LOMB4
+        let sphereGeometry4 = new THREE.SphereGeometry(2, 16, 16);
+        let sphereMesh4 = new THREE.Mesh(sphereGeometry4, sphereMaterial1);
+        sphereMesh4.position.set(7, 7, 7);
+        scene.add(sphereMesh4);
+
+
+
     }
+
+
+
 
     function handleWindowResize() {
         width = window.innerWidth;
