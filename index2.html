@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <title>Második félévközi beadandó</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+
+    canvas {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+<script async src="./dist/es-module-shims.js"></script>
+<script type="importmap">
+  {
+      "imports": {
+          "three": "./js-r178/build/three.module.js",
+          "trackballcontrols": "./js-r178/examples/jsm/controls/TrackballControls.js"
+      }
+  }
+</script>
+
+<script type="module">
+  import * as THREE from 'three';
+  import { TrackballControls } from 'trackballcontrols';
+  let width, height, aspectRatio, renderer, scene, camera, geometry, material, mesh, controls;
+
+  init();
+  animate();
+
+  function init() {
+    width = window.innerWidth;
+    height = window.innerHeight;
+    aspectRatio = width / height;
+
+    renderer = new THREE.WebGLRenderer( {antialias: true});
+    renderer.setSize(width, height);
+    renderer.setClearColor(0x000000);
+    renderer.shadowMap.enabled = true;
+    document.body.appendChild(renderer.domElement);
+
+    scene = new THREE.Scene();
+
+    camera = new THREE.PerspectiveCamera(75, aspectRatio, 0.1, 1000);
+    camera.position.set(15, 15, 30); // a kamera úgy állítva, hogy minden tárgy látszódjon
+    camera.lookAt(7, 3, 7); // a fa törzsének közepe
+
+    // TALAJ
+    let groundGeometry = new THREE.PlaneGeometry(40, 40);
+    let groundMaterail = new THREE.MeshLambertMaterial( {
+      color: 0x228B22,
+      wireframe: false,
+      side: THREE.DoubleSide
+    });
+    let groundMesh = new THREE.Mesh(groundGeometry, groundMaterail);
+    groundMesh.rotation.x = -1.0 * THREE.MathUtils.degToRad(90);
+    groundMesh.receiveShadow = true;
+    scene.add(groundMesh);
+
+    window.addEventListener('resize', handleWindowResize, false);
+
+    // Trackball Controls
+    controls = new TrackballControls(camera, renderer.domElement);
+    controls.rotateSpeed = 5.0;
+    controls.panSpeed = 1.0;
+
+    // TÖRZS
+    let cylinderGeometry = new THREE.CylinderGeometry(1, 1, 6);
+    let cylinderMaterial = new THREE.MeshLambertMaterial({
+      color: 0x8B4513,
+      wireframe: false,
+    });
+
+    let cylinderMesh = new THREE.Mesh(cylinderGeometry, cylinderMaterial);
+    cylinderMesh.position.set(7, 3.01, 7);
+    cylinderMesh.castShadow = true;
+    cylinderMesh.receiveShadow = true;
+    scene.add(cylinderMesh);
+
+    // LOMB1
+    let sphereGeometry1 = new THREE.SphereGeometry(2, 16, 16);
+    let sphereMaterial1 = new THREE.MeshPhongMaterial({
+      color: 0x228444,
+      wireframe: false,
+      shininess: 40
+    });
+
+    let sphereMesh1 = new THREE.Mesh(sphereGeometry1, sphereMaterial1);
+    sphereMesh1.position.set(5, 5, 7.5);
+    sphereMesh1.castShadow = true;
+    scene.add(sphereMesh1);
+
+    // LOMB2
+    let sphereGeometry2 = new THREE.SphereGeometry(2, 16, 16);
+
+    let sphereMesh2 = new THREE.Mesh(sphereGeometry2, sphereMaterial1);
+    sphereMesh2.position.set(7.5, 5, 5.5);
+    sphereMesh2.castShadow = true;
+    scene.add(sphereMesh2);
+
+    // LOMB3
+    let sphereGeometry3 = new THREE.SphereGeometry(2, 16, 16);
+    let sphereMesh3 = new THREE.Mesh(sphereGeometry3, sphereMaterial1);
+    sphereMesh3.position.set(8, 5, 8);
+    sphereMesh3.castShadow = true;
+    scene.add(sphereMesh3);
+
+    // LOMB4
+    let sphereGeometry4 = new THREE.SphereGeometry(2, 16, 16);
+    let sphereMesh4 = new THREE.Mesh(sphereGeometry4, sphereMaterial1);
+    sphereMesh4.position.set(7, 7, 7);
+    sphereMesh4.castShadow = true;
+    scene.add(sphereMesh4);
+
+    // ÚJ SZÍNEZETT FELSZÍNHÁLÓ
+    let cubeGeometry = new THREE.BoxGeometry(2, 2, 2);
+    let cubeMaterial = new THREE.MeshPhongMaterial({
+      color: 0xff3333,
+      wireframe: false,
+      shininess: 100
+    });
+    let cubeMesh = new THREE.Mesh(cubeGeometry, cubeMaterial);
+    cubeMesh.position.set(9, 1.01, 9);
+    cubeMesh.castShadow = true;
+    scene.add(cubeMesh);
+
+    // AMBIENS FÉNY
+    let aLight = new THREE.AmbientLight(0x666666);
+    scene.add(aLight);
+
+
+    // IRÁNYFÉNY
+    let dLight = new THREE.DirectionalLight(0xffffff, 2);
+    dLight.position.set(20, 20, 20);
+    dLight.castShadow = true;
+
+    dLight.shadow.camera.left = -100;
+    dLight.shadow.camera.right = 100;
+    dLight.shadow.camera.top = 100;
+    dLight.shadow.camera.bottom = -100;
+
+
+    scene.add(dLight);
+    dLight.shadow.mapSize.width = 4096;
+    dLight.shadow.mapSize.height = 4096;
+
+
+    let dirHelper = new THREE.DirectionalLightHelper(dLight, 5);
+    scene.add(dirHelper);
+
+    // PONTFÉNY
+    let pLight = new THREE.PointLight(0x00aaff, 2, 100);
+    pLight.position.set(-10, 20, 20);
+    pLight.castShadow = true;
+    scene.add(pLight);
+
+
+    // REFLEKTORFÉNY
+    let sLight = new THREE.SpotLight(0xff6600, 1);
+    sLight.position.set(15, 15, 1);
+    sLight.target.position.set(7, 3, 7);
+    sLight.castShadow = true;
+    scene.add(sLight);
+
+    let spotLightHelper = new THREE.SpotLightHelper( sLight );
+    scene.add( spotLightHelper );
+  }
+
+
+  function handleWindowResize() {
+    width = window.innerWidth;
+    height = window.innerHeight;
+    renderer.setSize(width, height);
+    aspectRatio = width / height;
+    camera.aspect = aspectRatio;
+    camera.updateProjectionMatrix();
+
+    render();
+  }
+
+  function animate() {
+    requestAnimationFrame(animate);
+    controls.update();
+    render();
+  }
+
+  function render() {
+    renderer.render(scene, camera);
+  }
+
+</script>
+</body>
+</html>
